@@ -6,6 +6,20 @@
 2. Create a new project `mix new pandemix`
 3. Launch tests `cd pandemix && mix test`
 
+## Dializer
+
+see [dialyxir](https://github.com/jeremyjh/dialyxir)
+
+```
+mix dialyzer.plt
+```
+
+
+```
+mix dialyzer
+```
+
+
 **TODO: Add description**
 
 ## Installation
