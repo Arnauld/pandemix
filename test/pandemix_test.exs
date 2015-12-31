@@ -1,5 +1,5 @@
 defmodule PandemixTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Pandemix
 
   test "the truth" do
