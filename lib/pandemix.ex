@@ -1,0 +1,2 @@
+defmodule Pandemix do
+end
