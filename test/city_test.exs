@@ -22,4 +22,9 @@ defmodule CityTest do
     City.increase_infection_level(:london, :blue)
     assert [{:blue, 1}] == City.infection_levels(:london)
   end
+
+  test "change infection level" do
+  	City.change_infection_level(:london, :pink, 4)
+    assert [{:pink, 4}] == City.infection_levels(:london)
+  end
 end

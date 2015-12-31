@@ -29,4 +29,11 @@ defmodule City do
       {name, links, new_levels}
     end)
   end
+
+  def change_infection_level(city, disease, new_level) do
+    Agent.update(city, fn {name, links, levels} ->
+      new_levels = Map.put(levels, disease, new_level)
+      {name, links, new_levels}
+    end)
+  end
 end
