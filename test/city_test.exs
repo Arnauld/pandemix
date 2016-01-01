@@ -9,7 +9,7 @@ defmodule CityTest do
           # because it will receive a :shutdown signal 
           # when our test finishes. 
           :agent_automatically_stopped
-        #City.stop(pid)
+          #City.stop(pid)
     end
     {:ok, pid: pid}
   end
@@ -35,8 +35,22 @@ defmodule CityTest do
   end
 
   test "change infection level" do
-      City.change_infection_level(:london, :pink, 4)
+    City.change_infection_level(:london, :pink, 4)
     assert [{:pink, 4}] == City.infection_levels(:london)
+  end
+
+  test "change infection level which then trigger an async notification" do
+    {:ok, ref} = City.change_infection_level(:london, :green, 4, self())
+    receive do
+        {:infection_level_changed, city, ref0, disease, new_level} ->
+            assert 4       == new_level
+            assert :green  == disease
+            assert :london == city
+            assert ref     == ref0
+    after
+       1_000 -> 
+               assert false, "Timeout"
+    end
   end
 
   test "cannot increase infection level above 3" do
@@ -45,7 +59,7 @@ defmodule CityTest do
     assert [{:pink, 3}] == City.infection_levels(:london)
   end
 
-  test "cannot increase infection level above 3 which then trigger an outbreak notification" do
+  test "cannot increase infection level above 3 which then trigger an async outbreak notification" do
     City.change_infection_level(:london, :green, 3)
     {:ok, ref} = City.increase_infection_level(:london, :green, self())
     receive do
@@ -57,5 +71,12 @@ defmodule CityTest do
        1_000 -> 
                assert false, "Timeout"
     end
+  end
+
+  test "retrieve city's links" do
+  	City.start_link(:paris, [:london, :madrid])
+    assert []                 == City.links(:london)
+    assert [:london, :madrid] == City.links(:paris)
+
   end
 end
