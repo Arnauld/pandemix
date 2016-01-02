@@ -52,13 +52,13 @@ defmodule DiseaseTest do
     end
   end
 
-  test "release cubes back to number of available" do
+  test "release cubes back to available ones" do
     Disease.consume :blue, 14
     Disease.release :blue, 7
     assert 17 == Disease.nb_cubes_remaining(:blue)
   end
 
-  test "release cubes back to number of available which then trigger an async notification" do
+  test "release cubes back to available ones which then trigger an async notification" do
     Disease.consume :blue, 14
     {:ok, ref} = Disease.release :blue, 7, self()
     assert 17 == Disease.nb_cubes_remaining(:blue)
