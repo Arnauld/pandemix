@@ -6,7 +6,7 @@ defmodule City do
   @doc "Starts the city (agent)."
   def start_link(city, links \\ []) do
     Agent.start_link(fn -> 
-      Logger.info "Starting City #{city} with links #{inspect links}"
+      # Logger.info "Starting City #{city} with links #{inspect links}"
       {city, links, %{}} 
     end, name: city)
   end
