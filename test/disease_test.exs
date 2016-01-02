@@ -18,7 +18,6 @@ defmodule DiseaseTest do
     assert 24 == Disease.nb_cubes_remaining(:blue)
   end
 
-
   test "consume disease's cubes" do
     Disease.consume :blue, 5
     assert 19 == Disease.nb_cubes_remaining(:blue)
@@ -34,7 +33,6 @@ defmodule DiseaseTest do
             assert ref     == ref0
     end
   end
-
 
   test "cannot consume more than available disease's cubes" do
     Disease.consume :blue, 34
