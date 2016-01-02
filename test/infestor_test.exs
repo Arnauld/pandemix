@@ -3,15 +3,24 @@ defmodule InfestorTest do
   doctest Infestor
 
   test "simple infection" do
+  	#
+  	# Given
+  	#
     city_specs = [{:london, [:paris, :madrid]}, 
                   {:madrid, [:london, :paris]},
                   {:paris,  [:london, :madrid]}]
     CitySup.start_link(city_specs)
-
     City.change_infection_level(:london, :blue, 2)
     City.change_infection_level(:madrid, :blue, 1)
 
+    #
+    # When
+    #
     {:ok, journal} = Infestor.infect(:london, :blue)
+
+    #
+    # Then
+    #
     assert [{:propagate, :london}, 
             {:infected, :london, 3}] == journal
 
