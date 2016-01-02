@@ -39,9 +39,9 @@ defmodule InfestorTest do
     Disease.change_nb_cubes_remaining(:blue, 0)
 
     {:error, reason} = Infestor.infect(:london, :blue)
-    {what, {:journal, _journal}, {:pending, _pending}}  = reason
 
-    assert :not_enough_cubes == what
+    assert :not_enough_cubes == reason[:what]
+    assert [consuming_cube: :london] == reason[:journal]
   end
 
   test "outbreak propagation" do

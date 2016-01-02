@@ -13,6 +13,10 @@ defmodule Infestor do
     journal = []
     ref = :erlang.make_ref()
     spawn_link Infestor, :propagate, [ref, listener, disease, to_infect, already_outbreaked, pending, journal]
+    wait_response(ref)
+  end
+
+  defp wait_response(ref) do
     receive do
       {:ok, ref0, updated_journal} when ref0 == ref ->
         {:ok, Enum.reverse(updated_journal)}
@@ -51,7 +55,7 @@ defmodule Infestor do
     receive do
       {:cube_consumed, _disease, _ref, :not_enough_cubes} ->
       	Logger.debug "propagate.3, cube_consumed/not_enough_cubes"
-      	send listener, {:error, {:not_enough_cubes, {:journal, journal}, {:pending, pending}}}
+      	send listener, {:error, [what: :not_enough_cubes, journal: journal, pending: pending]}
 
       {:cube_consumed, disease, ref0, updated} ->
       	Logger.debug "propagate.3, cube_consumed/#{updated}"
@@ -81,7 +85,7 @@ defmodule Infestor do
 
     after 
       @timeout_notification ->
-        send listener, {:error, {:timeout, {:pending, pending}}}
+        send listener, {:error, [what: :notification_timeout, pending: pending]}
     end
   end
 
