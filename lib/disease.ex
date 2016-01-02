@@ -16,14 +16,30 @@ defmodule Disease do
     Agent.stop(disease)
   end
 
-  @doc ""
+  @doc "Return the number of cube remaining for the disease"
   def nb_cubes_remaining(disease) do
     Agent.get(disease, fn {_name, remainings} ->
       remainings
     end)
   end
 
-  @doc "Consume disease's cubes"
+  @doc """
+  Change the number of cube remaining for the disease. 
+  Notification is sent asynchronously once done.
+  """
+  def change_nb_cubes_remaining(disease, nb_cubes, listener \\ :nil) do
+    ref = :erlang.make_ref()
+    Agent.update(disease, fn {name, _remainings} ->
+      send_if_not_nil listener, {:cube_changed, disease, ref, nb_cubes}
+      {name, nb_cubes}
+    end)
+    {:ok, ref}
+  end
+
+  @doc """
+  Consume disease's cubes.
+  Notification is sent asynchronously once done.
+  """
   def consume(disease, nb_cubes, listener \\ :nil) do
     ref = :erlang.make_ref()
     Agent.update(disease, fn {name, remainings} ->
@@ -42,7 +58,10 @@ defmodule Disease do
     {:ok, ref}
   end
 
-  @doc "Release disease's cubes"
+  @doc """
+  Release disease's cubes.
+  Notification is sent asynchronously once done.
+  """
   def release(disease, nb_cubes, listener \\ :nil) do
     ref = :erlang.make_ref()
     Agent.update(disease, fn {name, remainings} ->
