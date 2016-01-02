@@ -3,8 +3,10 @@ defmodule InfestorTest do
   doctest Infestor
 
   setup do
-	Disease.start_link :blue
-	city_specs = [{:london, [:paris,  :madrid]}, 
+	  Disease.start_link :blue
+    OutbreakCounter.start_link()
+
+	  city_specs = [{:london, [:paris,  :madrid]}, 
                   {:madrid, [:london, :paris]},
                   {:paris,  [:london, :madrid]}]
     CitySup.start_link(city_specs)
@@ -52,9 +54,10 @@ defmodule InfestorTest do
 
     assert [{:consuming_cube, :london}, 
             {:propagate, :london}, 
-            {:outbreak, :london}, 
+            {:declaring_outbreak, :london},
             {:consuming_cube, :paris}, 
             {:consuming_cube, :madrid},
+            {:outbreak, :london}, 
             {:propagate, :paris}, 
             {:propagate, :madrid}, 
             {:infected, :paris, 1}, 
@@ -73,18 +76,31 @@ defmodule InfestorTest do
 
     assert [{:consuming_cube, :london}, 
             {:propagate, :london}, 
-            {:outbreak, :london}, 
+            {:declaring_outbreak, :london},
             {:consuming_cube, :paris}, 
             {:consuming_cube, :madrid},
+            {:outbreak, :london}, 
             {:propagate, :paris}, 
             {:propagate, :madrid}, 
             {:infected, :paris, 3}, 
-            {:outbreak, :madrid}, 
+            {:declaring_outbreak, :madrid},
             {:consuming_cube, :paris},
+            {:outbreak, :madrid}, 
             {:propagate, :paris}, 
+            {:declaring_outbreak, :paris},
             {:outbreak, :paris}] == journal
     assert [{:blue, 3}] == City.infection_levels(:london)
     assert [{:blue, 3}] == City.infection_levels(:madrid)
     assert [{:blue, 3}] == City.infection_levels(:paris)
   end
+
+  test "outbreak propagation fail when outbreak threshold is reached" do
+    OutbreakCounter.change_nb_outbreaks(8)
+    City.change_infection_level(:london, :blue, 3)
+
+    {:error, reason} = Infestor.infect(:london, :blue)
+
+    assert :outbreak_threshold_reached == reason[:what]
+  end
+
 end

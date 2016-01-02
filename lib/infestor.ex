@@ -42,7 +42,7 @@ defmodule Infestor do
         propagate(ref, listener, disease, others_to_infect, already_outbreaked, pending, journal)
 
       false ->
-      	{ok, cube_ref} = Disease.consume disease, 1, self()
+      	{:ok, cube_ref} = Disease.consume disease, 1, self()
       	new_journal = [{:consuming_cube, to_infect} | journal]
         new_pending = [{cube_ref, {to_infect, :consuming_cube}} | pending]
         propagate(ref, listener, disease, others_to_infect, already_outbreaked, new_pending, new_journal)
@@ -65,12 +65,28 @@ defmodule Infestor do
         new_journal = [{:propagate, to_infect} | journal]
         new_pending = List.delete pending, {ref0, {to_infect, :consuming_cube}}
         new_pending = [{infect_ref, {to_infect, :infection}} | new_pending]
-        propagate(ref, listener, disease, [], already_outbreaked, new_pending, new_journal)      	
+        propagate(ref, listener, disease, [], already_outbreaked, new_pending, new_journal)
+
+      {:outbreak_declared, _ref, :threshold_reached} ->
+        Logger.debug "propagate.3, outbreak_declared/threshold_reached"
+        send listener, {:error, [what: :outbreak_threshold_reached, journal: journal, pending: pending]}
+
+      {:outbreak_declared, ref0, updated} ->
+        Logger.debug "propagate.3, cube_consumed/#{updated}"
+        {city, :declaring_outbreak} = lookup ref0, pending
+
+        new_journal = [{:outbreak, city} | journal]
+        new_pending = List.delete pending, {ref0, {city, :declaring_outbreak}}
+        propagate(ref, listener, disease, [], already_outbreaked, new_pending, new_journal)
 
       {:infection_level_increased, city, ref0, disease, :outbreak, links} ->
+        {:ok, outbreak_ref} = OutbreakCounter.declare(self())
+
         outbreaked = MapSet.put already_outbreaked, city
-        new_journal = [{:outbreak, city} | journal]
+        new_journal = [{:declaring_outbreak, city} | journal]
         new_pending = List.delete pending, {ref0, {city, :infection}}
+        new_pending = [{outbreak_ref, {city, :declaring_outbreak}} | new_pending]
+
         propagate(ref, listener, disease, links, outbreaked, new_pending, new_journal)
 
       {:infection_level_increased, city, ref0, disease, new_level} ->
