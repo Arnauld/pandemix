@@ -6,7 +6,7 @@ defmodule Disease do
   @doc "Starts the disease (agent)."
   def start_link(disease, nb_cubes \\ 24) do
     Agent.start_link(fn -> 
-      # Logger.info "Starting Disease #{disease} with #{nb_cubes} cubes"
+      Logger.debug "Starting Disease #{disease} with #{nb_cubes} cubes"
       {disease, nb_cubes} 
     end, name: disease)
   end

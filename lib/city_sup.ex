@@ -1,6 +1,5 @@
 defmodule CitySup do
   use Supervisor
-  import Enum
 
   def start_link(city_specs) do
     Supervisor.start_link(__MODULE__, city_specs)

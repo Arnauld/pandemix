@@ -30,4 +30,4 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 config :logger,
   backends: [:console],
-  level: :debug
+  level: :info
