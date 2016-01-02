@@ -60,13 +60,15 @@ defmodule CityTest do
   end
 
   test "cannot increase infection level above 3 which then trigger an async outbreak notification" do
-    City.change_infection_level(:london, :green, 3)
-    {:ok, ref} = City.increase_infection_level(:london, :green, self())
+    City.start_link(:paris, [:london, :madrid])
+    City.change_infection_level(:paris, :green, 3)
+    {:ok, ref} = City.increase_infection_level(:paris, :green, self())
     receive do
-        {:infection_level_increased, city, ref0, disease, :outbreak} ->
-            assert :green  == disease
-            assert :london == city
-            assert ref     == ref0
+        {:infection_level_increased, city, ref0, disease, :outbreak, links} ->
+            assert :green == disease
+            assert :paris == city
+            assert ref    == ref0
+            assert [:london, :madrid] == links
     after
        1_000 -> 
                assert false, "Timeout"

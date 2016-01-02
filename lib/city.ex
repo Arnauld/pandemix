@@ -36,7 +36,7 @@ defmodule City do
       level = Map.get(levels, disease, 0)
       case level do
         _ when level >= 3 ->
-          send_if_not_nil listener, {:infection_level_increased, city, ref, disease, :outbreak}
+          send_if_not_nil listener, {:infection_level_increased, city, ref, disease, :outbreak, links}
           {name, links, levels}
 
         _ ->
