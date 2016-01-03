@@ -1,4 +1,4 @@
-defmodule OutbreakCounter do
+defmodule OutbreakMarker do
   import Logger
 
   @default_threshold 8

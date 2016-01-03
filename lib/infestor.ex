@@ -76,7 +76,7 @@ defmodule Infestor do
         propagate(ref, listener, disease, [], already_outbreaked, new_pending, new_journal)
 
       {:infection_level_increased, city, ref0, disease, :outbreak, links} ->
-        {:ok, outbreak_ref} = OutbreakCounter.declare(self())
+        {:ok, outbreak_ref} = OutbreakMarker.declare(self())
 
         outbreaked = MapSet.put already_outbreaked, city
         new_journal = [{:declaring_outbreak, city} | journal]

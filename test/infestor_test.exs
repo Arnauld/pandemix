@@ -4,7 +4,7 @@ defmodule InfestorTest do
 
   setup do
 	  Disease.start_link :blue
-    OutbreakCounter.start_link()
+    OutbreakMarker.start_link()
 
 	  city_specs = [{:london, [:paris,  :madrid]}, 
                   {:madrid, [:london, :paris]},
@@ -95,7 +95,7 @@ defmodule InfestorTest do
   end
 
   test "outbreak propagation fail when outbreak threshold is reached" do
-    OutbreakCounter.change_nb_outbreaks(8)
+    OutbreakMarker.change_nb_outbreaks(8)
     City.change_infection_level(:london, :blue, 3)
 
     {:error, reason} = Infestor.infect(:london, :blue)
