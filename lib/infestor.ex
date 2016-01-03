@@ -54,11 +54,9 @@ defmodule Infestor do
     Logger.debug "propagate.3, pending #{inspect pending}"
     receive do
       {:cube_consumed, _disease, _ref, :not_enough_cubes} ->
-      	Logger.debug "propagate.3, cube_consumed/not_enough_cubes"
       	send listener, {:error, [what: :not_enough_cubes, journal: journal, pending: pending]}
 
       {:cube_consumed, disease, ref0, updated} ->
-      	Logger.debug "propagate.3, cube_consumed/#{updated}"
       	{to_infect, :consuming_cube} = lookup ref0, pending
 
         {ok, infect_ref} = City.increase_infection_level to_infect, disease, self()
@@ -68,11 +66,9 @@ defmodule Infestor do
         propagate(ref, listener, disease, [], already_outbreaked, new_pending, new_journal)
 
       {:outbreak_declared, _ref, :threshold_reached} ->
-        Logger.debug "propagate.3, outbreak_declared/threshold_reached"
         send listener, {:error, [what: :outbreak_threshold_reached, journal: journal, pending: pending]}
 
       {:outbreak_declared, ref0, updated} ->
-        Logger.debug "propagate.3, cube_consumed/#{updated}"
         {city, :declaring_outbreak} = lookup ref0, pending
 
         new_journal = [{:outbreak, city} | journal]
