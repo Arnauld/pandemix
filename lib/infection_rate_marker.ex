@@ -44,7 +44,7 @@ defmodule InfectionRateMarker do
   This may change the the infection rate.
 
   Notification is sent asynchronously once done.
-  `{:infection_rate_changed, ref, current_level, current_rate`
+  `{:infection_rate_changed, ref, current_level, current_rate}`
   """
   def increase_rate(listener \\ :nil) do
   	ref = :erlang.make_ref()

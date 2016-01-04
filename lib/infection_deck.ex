@@ -24,7 +24,10 @@ defmodule InfectionDeck do
 
   @doc """
   Draw `n` cards from the cards pile to the discard pile.
-  The cards drawn are return.
+  
+
+  Notification is sent asynchronously once done.
+  `{:cards_drawn, ref, card_cards_drawn}`
   """
   def draw(n, listener \\ :nil) do
   	ref = :erlang.make_ref()
