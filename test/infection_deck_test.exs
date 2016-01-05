@@ -95,4 +95,31 @@ defmodule InfectionDeckTest do
     assert []                         == InfectionDeck.discard_pile()
   end
 
+  test "rearrange first cards (no shuffle)" do
+    cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
+    InfectionDeck.start_link(cities, &Funs.identity/1)
+
+    new_top_cards = [:madrid, :london, :paris]
+    {:ok, ref} = InfectionDeck.rearrange(new_top_cards, self())
+    receive do
+      {:cards_rearranged, ref0, status} ->
+            assert ref == ref0
+            assert {:ok, new_top_cards} == status
+            assert [:madrid, :london, :paris, :algiers] == InfectionDeck.reveal(4)
+    end
+  end
+
+  test "rearrange first cards (no shuffle) only if matchings" do
+    cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
+    InfectionDeck.start_link(cities, &Funs.identity/1)
+
+    {:ok, ref} = InfectionDeck.rearrange([:madrid, :london, :essen], self())
+    receive do
+      {:cards_rearranged, ref0, status} ->
+            assert ref == ref0
+            assert :non_matching_cards == status
+            assert cities == InfectionDeck.reveal(6)
+    end
+  end
+
 end
