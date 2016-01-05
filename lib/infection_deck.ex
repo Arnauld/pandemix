@@ -59,6 +59,12 @@ defmodule InfectionDeck do
     {:ok, ref}
   end
 
+  def reveal(n) do
+    Agent.get(:infection_deck, fn {cards, _discard_pile} ->
+      Enum.take cards, n
+    end)
+  end
+
   defp send_if_not_nil(pid, _msg) when pid==:nil do
     :ok
   end

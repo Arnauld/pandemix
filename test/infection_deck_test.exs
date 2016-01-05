@@ -73,4 +73,26 @@ defmodule InfectionDeckTest do
     end
   end
 
+  test "reveal first cards" do
+    cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
+    InfectionDeck.start_link(cities)
+
+    cards_revealed = InfectionDeck.reveal(3)
+    {:ok, ref} = InfectionDeck.draw(3, self())
+    receive do
+        {:cards_drawn, ref0, cards_drawn} ->
+            assert ref         == ref0
+            assert cards_drawn == cards_revealed
+    end
+  end
+
+  test "reveal first cards (no shuffle)" do
+    cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
+    InfectionDeck.start_link(cities, &Funs.identity/1)
+
+    cards = InfectionDeck.reveal(3)
+    assert [:paris, :london, :madrid] == cards
+    assert []                         == InfectionDeck.discard_pile()
+  end
+
 end
