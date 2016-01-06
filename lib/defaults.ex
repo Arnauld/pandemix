@@ -1,5 +1,19 @@
 defmodule Defaults do
 
+  @doc """
+  opts:
+  """
+  def game(opts \\ []) do
+    difficulty = Keywords.get(opts, :difficulty, :normal)
+    nb_epidemic_cards = case difficulty do
+                          :introductory -> 4
+                          :normal -> 5
+                          :heroic -> 6
+                        end
+    nb_players = Keywords.get(opts, :nb_players, 4)
+  end
+
+
   def city_specs_from_raw_links(links) do
     city_specs = Enum.reduce links, Map.new(), fn ({city1,city2}, acc) ->
       l1 = Map.get acc, city1, []
