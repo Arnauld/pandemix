@@ -18,6 +18,11 @@ defmodule DiseaseTest do
     assert 24 == Disease.nb_cubes_remaining(:blue)
   end
 
+  test "default cure status" do
+    assert :undiscovered == Disease.cure_status(:blue)
+  end
+  
+
   test "consume disease's cubes" do
     Disease.consume :blue, 5
     assert 19 == Disease.nb_cubes_remaining(:blue)
@@ -66,6 +71,16 @@ defmodule DiseaseTest do
             assert :blue == disease
             assert ref   == ref0
     end
+  end
+
+  test "change cure status to discovered" do
+    Disease.mark_cure_discovered(:blue)
+    assert :discovered == Disease.cure_status(:blue)
+  end
+
+  test "change cure status to discovered" do
+    Disease.mark_cure_eradicated(:blue)
+    assert :eradicated == Disease.cure_status(:blue)
   end
 
 end
