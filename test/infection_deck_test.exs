@@ -20,7 +20,7 @@ defmodule InfectionDeckTest do
 
   test "draw cards (no shuffle)" do
     cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
-    InfectionDeck.start_link(cities, fn xs -> xs end)
+    InfectionDeck.start_link(cities, &Funs.identity/1)
 
     InfectionDeck.draw(2)
     assert [:paris, :london] = InfectionDeck.discard_pile()
@@ -54,7 +54,7 @@ defmodule InfectionDeckTest do
 
   test "draw last card (no shuffle)" do
     cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
-    InfectionDeck.start_link(cities, fn xs -> xs end)
+    InfectionDeck.start_link(cities, &Funs.identity/1)
 
     InfectionDeck.draw_last()
     assert [:new_york] = InfectionDeck.discard_pile()
@@ -65,7 +65,7 @@ defmodule InfectionDeckTest do
     
   test "draw last card (no shuffle) which then trigger an async notification" do
     cities = [:paris, :london, :madrid, :algiers, :essen, :new_york]
-    InfectionDeck.start_link(cities, fn xs -> xs end)
+    InfectionDeck.start_link(cities, &Funs.identity/1)
 
     {:ok , ref} = InfectionDeck.draw_last(self())
     receive do
