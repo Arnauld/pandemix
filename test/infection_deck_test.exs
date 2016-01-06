@@ -34,9 +34,11 @@ defmodule InfectionDeckTest do
     InfectionDeck.start_link(cities)
     {:ok, ref} = InfectionDeck.draw(2, self())
     receive do
-        {:cards_drawn, ref0, cards_drawn} ->
+        {:infection_cards_drawn, ref0, cards_drawn} ->
             assert ref         == ref0
             assert cards_drawn == InfectionDeck.discard_pile()
+        other ->
+            assert :wat == other
     end
   end
 
@@ -67,7 +69,7 @@ defmodule InfectionDeckTest do
 
     {:ok , ref} = InfectionDeck.draw_last(self())
     receive do
-        {:last_card_drawn, ref0, card_drawn} ->
+        {:last_infection_card_drawn, ref0, card_drawn} ->
             assert ref        == ref0
             assert card_drawn == InfectionDeck.discard_pile()
     end
@@ -80,9 +82,11 @@ defmodule InfectionDeckTest do
     cards_revealed = InfectionDeck.reveal(3)
     {:ok, ref} = InfectionDeck.draw(3, self())
     receive do
-        {:cards_drawn, ref0, cards_drawn} ->
+        {:infection_cards_drawn, ref0, cards_drawn} ->
             assert ref         == ref0
             assert cards_drawn == cards_revealed
+        other ->
+            assert :wat == other
     end
   end
 
@@ -102,7 +106,7 @@ defmodule InfectionDeckTest do
     new_top_cards = [:madrid, :london, :paris]
     {:ok, ref} = InfectionDeck.rearrange(new_top_cards, self())
     receive do
-      {:cards_rearranged, ref0, status} ->
+      {:infection_cards_rearranged, ref0, status} ->
             assert ref == ref0
             assert {:ok, new_top_cards} == status
             assert [:madrid, :london, :paris, :algiers] == InfectionDeck.reveal(4)
@@ -115,7 +119,7 @@ defmodule InfectionDeckTest do
 
     {:ok, ref} = InfectionDeck.rearrange([:madrid, :london, :essen], self())
     receive do
-      {:cards_rearranged, ref0, status} ->
+      {:infection_cards_rearranged, ref0, status} ->
             assert ref == ref0
             assert :non_matching_cards == status
             assert cities == InfectionDeck.reveal(6)

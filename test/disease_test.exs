@@ -78,7 +78,7 @@ defmodule DiseaseTest do
     assert :discovered == Disease.cure_status(:blue)
   end
 
-  test "change cure status to discovered" do
+  test "change cure status to eradicated" do
     Disease.mark_cure_eradicated(:blue)
     assert :eradicated == Disease.cure_status(:blue)
   end

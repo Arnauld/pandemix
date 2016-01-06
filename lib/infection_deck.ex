@@ -28,14 +28,14 @@ defmodule InfectionDeck do
   
 
   Notification is sent asynchronously once done.
-  `{:cards_drawn, ref, cards_drawn}`
+  `{:infection_cards_drawn, ref, cards_drawn}`
   """
   def draw(n, listener \\ :nil) do
     ref = :erlang.make_ref()
     Agent.update(:infection_deck, fn {cards, discard_pile} ->
       drawns = Enum.take cards, n
       remainings = Enum.drop cards, n
-      send_if_not_nil listener, {:cards_drawn, ref, drawns}
+      send_if_not_nil listener, {:infection_cards_drawn, ref, drawns}
       {remainings, drawns ++ discard_pile}
     end)
     {:ok, ref}
@@ -46,14 +46,14 @@ defmodule InfectionDeck do
   Draw the last card from the pile.
 
   Notification is sent asynchronously once done.
-  `{:last_card_drawn, ref, card_drawn}`  
+  `{:last_infection_card_drawn, ref, card_drawn}`  
   """
   def draw_last(listener \\ :nil) do
     ref = :erlang.make_ref()
     Agent.update(:infection_deck, fn {cards, discard_pile} ->
       drawn = Enum.take cards, -1
       remainings = Enum.drop cards, -1
-      send_if_not_nil listener, {:last_card_drawn, ref, drawn}
+      send_if_not_nil listener, {:last_infection_card_drawn, ref, drawn}
       {remainings, drawn ++ discard_pile}
     end)
     {:ok, ref}
@@ -77,10 +77,10 @@ defmodule InfectionDeck do
 
       if Enum.sort(drawn) == Enum.sort(top_cards) do
         remainings = Enum.drop cards, nb
-        send_if_not_nil listener, {:cards_rearranged, ref, {:ok, top_cards}}
+        send_if_not_nil listener, {:infection_cards_rearranged, ref, {:ok, top_cards}}
         {top_cards ++ remainings, discard_pile}
       else
-        send_if_not_nil listener, {:cards_rearranged, ref, :non_matching_cards}
+        send_if_not_nil listener, {:infection_cards_rearranged, ref, :non_matching_cards}
         {cards, discard_pile}
       end
     end)
