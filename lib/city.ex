@@ -18,30 +18,30 @@ defmodule City do
 
   @doc "Returns the infection levels of the city"
   def infection_levels(city) do
-    Agent.get(city, fn {_name, _links, levels} ->
-      Map.to_list(levels)
+    Agent.get(city, fn {_name, _links, infection_levels} ->
+      Map.to_list(infection_levels)
     end)
   end
 
   @doc "Returns the links of the city"
   def links(city) do
-    Agent.get(city, fn {_name, links, _levels} ->
+    Agent.get(city, fn {_name, links, _infection_levels} ->
       links
     end)
   end
 
   def increase_infection_level(city, disease, listener \\ :nil) do 
     ref = :erlang.make_ref()
-    Agent.update(city, fn {name, links, levels} ->
-      level = Map.get(levels, disease, 0)
+    Agent.update(city, fn {name, links, infection_levels} ->
+      level = Map.get(infection_levels, disease, 0)
       case level do
         _ when level >= 3 ->
           send_if_not_nil listener, {:infection_level_increased, city, ref, disease, :outbreak, links}
-          {name, links, levels}
+          {name, links, infection_levels}
 
         _ ->
           new_level = level + 1
-          new_levels = Map.put(levels, disease, new_level)
+          new_levels = Map.put(infection_levels, disease, new_level)
           send_if_not_nil listener, {:infection_level_increased, city, ref, disease, new_level}
           {name, links, new_levels}
       end
@@ -51,8 +51,8 @@ defmodule City do
 
   def change_infection_level(city, disease, new_level, listener \\ :nil) do
     ref = :erlang.make_ref()
-    Agent.update(city, fn {name, links, levels} ->
-      new_levels = Map.put(levels, disease, new_level)
+    Agent.update(city, fn {name, links, infection_levels} ->
+      new_levels = Map.put(infection_levels, disease, new_level)
       send_if_not_nil listener, {:infection_level_changed, city, ref, disease, new_level}
       {name, links, new_levels}
     end)
