@@ -3,7 +3,9 @@ defmodule ResearchStation do
 
   ## Client API
 
-  @doc "Starts the research station management (agent)."
+  @doc """
+  Starts the research station management (agent).
+  """
   def start_link(nb_research_stations \\ 6) do
     Agent.start_link(fn -> 
       Logger.debug "Starting with #{nb_research_stations} research stations"
@@ -26,7 +28,11 @@ defmodule ResearchStation do
   end
 
   @doc """
-  
+  Consumes a research station building.
+
+  Notification is sent asynchronously once done.
+  `{:research_station_consumed, ref, nb_building_remaining}`
+  `{:research_station_consumed, ref, :not_enough_research_station}`
   """
   def consume_research_station(listener \\ :nil) do
     ref = :erlang.make_ref()
